@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>free5GC 网管中心 OMS（Go）</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">5G</span>
+    <div><b>free5GC 网管中心</b><small id="nrfline">—</small></div>
+  </div>
+  <div class="topright">
+    <span id="banner-mock" class="badge warn hidden">演示模式（NRF 不可达，内置仿真数据）</span>
+    <span id="refreshline" class="muted"></span>
+    <label class="switch"><input type="checkbox" id="autoreload" checked><span>自动刷新 5s</span></label>
+    <button id="btn-refresh" class="btn ghost">立即刷新</button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-v="ov" class="on">总览</button>
+  <button data-v="nf">网元监控</button>
+  <button data-v="ues-sec">UE 与会话</button>
+  <button data-v="cfg">配置管理</button>
+  <button data-v="audit">配置审计</button>
+  <button data-v="disc">NRF 发现</button>
+  <button data-v="ev">事件</button>
+</nav>
+
+<main id="app">
+
+<section id="v-ov" class="view on">
+  <div class="kpis" id="kpis"></div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-h">网元健康（NRF 注册表 + SBI 探活）</div>
+      <div class="card-b"><table id="healthtbl"></table></div>
+    </div>
+    <div class="card">
+      <div class="card-h">用户面 / N4（SMF UserPlaneInfo）</div>
+      <div class="card-b"><div id="uptopo"></div></div>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-h">切片与 PLMN（AMF 配置摘要）</div>
+      <div class="card-b" id="slicebox"></div>
+    </div>
+    <div class="card">
+      <div class="card-h">事件流（最新 6 条）</div>
+      <div class="card-b" id="ovev"></div>
+    </div>
+  </div>
+</section>
+
+<section id="v-nf" class="view">
+  <div class="toolbar">点击网元卡片展开服务端点（即 webconsole 同款 URI 解析：Fqdn → apiPrefix → ipEndPoints）。</div>
+  <div class="nfgrid" id="nfgrid"></div>
+</section>
+
+<section id="v-ues-sec" class="view">
+  <div class="toolbar">数据源：AMF <code>/namf-oam/v1/registered-ue-context</code> 与 SMF <code>/nsmf-oam/v1/ue-pdu-session-info</code>。</div>
+  <div class="card"><div class="card-b nopad"><table id="uetbl" class="tbl"></table></div></div>
+  <div id="uedetail" class="detail hidden"></div>
+</section>
+
+<section id="v-cfg" class="view">
+  <div class="toolbar">
+    配置目录：<span id="cfgdir" class="mono"></span>
+    <select id="cfgsel"></select>
+    <button class="btn ghost" id="btn-cfg-reload">重新读取</button>
+  </div>
+  <div class="grid g21">
+    <div class="card"><div class="card-h">关键字段摘要</div><div class="card-b" id="cfgsum"></div></div>
+    <div class="card"><div class="card-h">原始 YAML</div><pre class="card-b yam" id="cfgraw"></pre></div>
+  </div>
+</section>
+
+<section id="v-audit" class="view">
+  <div class="toolbar">对「配置文件 ↔ NRF 运行态」做一致性检查（版本强校验、NRF 地址、注册状态、SMF↔UPF 地址、DNN、UE 地址池）。</div>
+  <div id="auditlist"></div>
+</section>
+
+<section id="v-disc" class="view">
+  <div class="toolbar">
+    target <select id="disc-target"></select> requester <select id="disc-req"></select>
+    <button class="btn" id="btn-disc">发起 Nnrf_NFDiscovery</button>
+    <code id="disc-url" class="muted"></code>
+  </div>
+  <table id="disctbl" class="tbl"></table>
+</section>
+
+<section id="v-ev" class="view">
+  <div class="toolbar">网管自身的探测/操作审计流（NRF 断连、PFCP 状态、控制操作等均记录于此）。</div>
+  <table id="evtbl" class="tbl"></table>
+</section>
+
+</main>
+<footer class="foot">基于 free5GC main 分支实际接口构建 · <a href="https://free5gc.org" target="_blank" rel="noopener">free5gc.org</a></footer>
+<script src="/static/app.js"></script>
+</body>
+</html>
